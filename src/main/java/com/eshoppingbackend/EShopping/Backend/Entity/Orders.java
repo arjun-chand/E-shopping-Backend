@@ -18,13 +18,18 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int oId;
+
     private String orderName;
+
     @ManyToOne
     Users users;
     private Date estimateDelivery;
     private int totalOrderPrice;
-    @OneToMany
+
+    @ManyToMany
+    @Column(unique = false)
     List<Product> orderItems;
+
     boolean isDelivered;
     private int totalOrderItems;
 }

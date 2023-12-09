@@ -2,18 +2,24 @@ package com.eshoppingbackend.EShopping.Backend.Controller;
 
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.AddUsersDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.LoginRequestDTO;
+import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.PlaceOrderDTO;
+import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.BillDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.GeneralMessageDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.LoginResponseDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.ShowCartDTO;
+import com.eshoppingbackend.EShopping.Backend.Entity.Orders;
 import com.eshoppingbackend.EShopping.Backend.Entity.Users;
 import com.eshoppingbackend.EShopping.Backend.Exception.*;
 import com.eshoppingbackend.EShopping.Backend.Service.CartService;
+import com.eshoppingbackend.EShopping.Backend.Service.OrderService;
 import com.eshoppingbackend.EShopping.Backend.Service.ProductService;
 import com.eshoppingbackend.EShopping.Backend.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/e-shopping/users")
@@ -23,6 +29,8 @@ public class UserController {
 
     @Autowired
     CartService cartService;
+    @Autowired
+    OrderService orderService;
 
     @PostMapping("/sign-up")
     public ResponseEntity signUp(@RequestBody AddUsersDTO addUsersDTO){
@@ -88,6 +96,38 @@ public class UserController {
         }catch (UserNotFoundException e){
             return new ResponseEntity(new GeneralMessageDTO(e.getMessage()),HttpStatus.NOT_FOUND);
 
+        }
+    }
+
+    @PostMapping("/place-order")
+    public ResponseEntity placeOrder(@RequestBody PlaceOrderDTO placeOrderDTO){
+        try {
+            BillDTO bill = orderService.placeOrder(placeOrderDTO);
+            return new ResponseEntity(bill, HttpStatus.CREATED);
+        }catch (UserNotFoundException userNotFoundException){
+            return new ResponseEntity(new GeneralMessageDTO(userNotFoundException.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{uid}/your-orders")
+    public ResponseEntity getAllOrders(@PathVariable int uid){
+        try {
+            List<Orders> orders = orderService.getAllOrdersByUserId(uid);
+            return new ResponseEntity(orders,HttpStatus.OK);
+        }catch(UserNotFoundException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{uid}/all-orders")
+    public ResponseEntity getAllOrdersByPreference(@PathVariable int uid, @RequestParam String deliveryPreference){
+        try {
+            List<Orders> allOrders = orderService.getAllOrdersByDeliveryPreference(uid, deliveryPreference);
+            return new ResponseEntity(allOrders,HttpStatus.OK);
+        }catch (UserNotFoundException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (WrongPreferenceException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 

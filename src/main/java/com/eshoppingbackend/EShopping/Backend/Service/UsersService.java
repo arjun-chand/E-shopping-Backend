@@ -27,6 +27,9 @@ public class UsersService {
         return usersRepository.getReferenceById(uId);
     }
 
+    public Users findUserByName(String userName){
+        return usersRepository.findByUserName(userName);
+    }
     public Users signUP(AddUsersDTO usersDTO){
         List<Object[]> adminCount= usersRepository.countOfAdminsAvailable();
         int count = Integer.parseInt(adminCount.get(0)[0].toString());
