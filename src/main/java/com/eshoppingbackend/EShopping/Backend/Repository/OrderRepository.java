@@ -27,4 +27,19 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
 
     @Query(value = "select * from orders where users_u_id = :uid and is_delivered = true", nativeQuery = true)
     public List<Orders> getAllDeliveredOrdersByUserId(@Param("uid") int uid);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from orders where o_id = :oid and users_u_id = :uid",nativeQuery = true)
+    public void deleteOrderByOrderIdAndUserId(int uid, int oid);
+
+
+    @Query(value = "select * from orders where o_id = :oid and users_u_id = :uid",nativeQuery = true)
+    public Orders getOrderByOrderIdAndUserId(int uid, int oid);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from orders_order_items where orders_o_id = :oid and order_items_p_id = :pid",nativeQuery = true)
+    public void deleteOrderVsProduct(int oid, int pid);
 }

@@ -3,10 +3,7 @@ package com.eshoppingbackend.EShopping.Backend.Controller;
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.AddUsersDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.LoginRequestDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.PlaceOrderDTO;
-import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.BillDTO;
-import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.GeneralMessageDTO;
-import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.LoginResponseDTO;
-import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.ShowCartDTO;
+import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.*;
 import com.eshoppingbackend.EShopping.Backend.Entity.Orders;
 import com.eshoppingbackend.EShopping.Backend.Entity.Users;
 import com.eshoppingbackend.EShopping.Backend.Exception.*;
@@ -122,7 +119,7 @@ public class UserController {
     @GetMapping("/{uid}/all-orders")
     public ResponseEntity getAllOrdersByPreference(@PathVariable int uid, @RequestParam String deliveryPreference){
         try {
-            List<Orders> allOrders = orderService.getAllOrdersByDeliveryPreference(uid, deliveryPreference);
+            List<OrderDTO> allOrders = orderService.getAllOrdersByDeliveryPreference(uid, deliveryPreference);
             return new ResponseEntity(allOrders,HttpStatus.OK);
         }catch (UserNotFoundException e){
             return new ResponseEntity(new GeneralMessageDTO(e.getMessage()), HttpStatus.NOT_FOUND);
@@ -131,4 +128,17 @@ public class UserController {
         }
     }
 
+    @DeleteMapping("/orders/{uid}/cancel-orders/{oid}")
+    public ResponseEntity deleteOrderByOrderIdAndUserId(@PathVariable int uid, @PathVariable int oid){
+        try {
+            orderService.cancelOrder(uid,oid);
+            return new ResponseEntity(new GeneralMessageDTO(String.format("order with order Id %d got cancelled with user Id %d",oid,uid)),HttpStatus.OK);
+        }catch (UserNotFoundException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()),HttpStatus.NOT_FOUND);
+        }catch (OrderNotFoundException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()),HttpStatus.NOT_FOUND);
+        }catch (WrongAccessException e){
+            return new ResponseEntity(new GeneralMessageDTO(e.getMessage()),HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

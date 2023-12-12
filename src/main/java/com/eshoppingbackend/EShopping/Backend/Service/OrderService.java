@@ -2,10 +2,13 @@ package com.eshoppingbackend.EShopping.Backend.Service;
 
 import com.eshoppingbackend.EShopping.Backend.DTO.RequestDTO.PlaceOrderDTO;
 import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.BillDTO;
+import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.OrderDTO;
 import com.eshoppingbackend.EShopping.Backend.Entity.Orders;
 import com.eshoppingbackend.EShopping.Backend.Entity.Product;
 import com.eshoppingbackend.EShopping.Backend.Entity.Users;
+import com.eshoppingbackend.EShopping.Backend.Exception.OrderNotFoundException;
 import com.eshoppingbackend.EShopping.Backend.Exception.UserNotFoundException;
+import com.eshoppingbackend.EShopping.Backend.Exception.WrongAccessException;
 import com.eshoppingbackend.EShopping.Backend.Exception.WrongPreferenceException;
 import com.eshoppingbackend.EShopping.Backend.Repository.OrderRepository;
 import org.apache.commons.lang3.time.DateUtils;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -76,17 +80,54 @@ public class OrderService {
         return orderRepository.getAllOrdersByUserId(uid);
     }
 
-    public List<Orders> getAllOrdersByDeliveryPreference(int uid, String deliveryPreference){
-        if(usersService.getUserById(uid) == null){
-            throw new UserNotFoundException("user does not exist in out database");
-        }
-        if(deliveryPreference.equals("delivered")){
-            return orderRepository.getAllDeliveredOrdersByUserId(uid);
-        } else if (deliveryPreference.equals("Not_Delivered")) {
-            return orderRepository.getAllNotDeliveredOrdersByUserId(uid);
-        }else {
-            throw new WrongPreferenceException("Delivery preference is not Correct");
+    public List<OrderDTO> getAllOrdersByDeliveryPreference(int uid, String deliveryPreference) {
+        if (usersService.getUserById(uid) == null) {
+            throw new UserNotFoundException("User does not exist in our database");
         }
 
+        List<Orders> orders;
+        if (deliveryPreference.equals("delivered")) {
+            orders = orderRepository.getAllDeliveredOrdersByUserId(uid);
+        } else if (deliveryPreference.equals("Not_Delivered")) {
+            orders = orderRepository.getAllNotDeliveredOrdersByUserId(uid);
+        } else {
+            throw new WrongPreferenceException("Delivery preference is not correct");
+        }
+
+        // Convert Orders to OrdersDTO
+        List<OrderDTO> ordersDTOList = orders.stream()
+                .map(order -> new OrderDTO(order.getOId(), order.getTotalOrderPrice(), order.getOrderName()))
+                .collect(Collectors.toList());
+
+        return ordersDTOList;
+    }
+
+    public void cancelOrder(int uid, int oid){
+        if(usersService.getUserById(uid) == null){
+            throw new UserNotFoundException(String.format("User with Id %d does not exist in System",uid));
+        }
+        if(orderRepository.findById(oid).orElse(null) == null){
+            throw new OrderNotFoundException(String.format("Order with order Id: %d does not exist in system",oid));
+        }
+
+        Orders order = orderRepository.getOrderByOrderIdAndUserId(uid,oid);//chance to get null so if admin line
+
+        Users user = usersService.getUserById(uid);
+        if(usersService.isAdmin(user.getUserName())){
+            order = orderRepository.findById(uid).orElse(null);
+        }
+        //order doest not belong to that id
+        if(order == null){
+            throw new WrongAccessException(String.format("User with user Id %d does not have access to cancel order with order Id %d",uid,oid));
+        }
+
+        //rmoving entry from parent beacause we are unable to delete product because it is dependent
+        List<Product> products = order.getOrderItems();
+
+        for(Product p : products){
+            int pid = p.getPId();
+            orderRepository.deleteOrderVsProduct(oid,pid);
+        }
+        orderRepository.deleteById(oid);
     }
 }
