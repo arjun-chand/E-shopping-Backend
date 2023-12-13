@@ -7,10 +7,7 @@ import com.eshoppingbackend.EShopping.Backend.DTO.ResponseDTO.*;
 import com.eshoppingbackend.EShopping.Backend.Entity.Orders;
 import com.eshoppingbackend.EShopping.Backend.Entity.Users;
 import com.eshoppingbackend.EShopping.Backend.Exception.*;
-import com.eshoppingbackend.EShopping.Backend.Service.CartService;
-import com.eshoppingbackend.EShopping.Backend.Service.OrderService;
-import com.eshoppingbackend.EShopping.Backend.Service.ProductService;
-import com.eshoppingbackend.EShopping.Backend.Service.UsersService;
+import com.eshoppingbackend.EShopping.Backend.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +26,13 @@ public class UserController {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    MailService mailService;
+
     @PostMapping("/sign-up")
     public ResponseEntity signUp(@RequestBody AddUsersDTO addUsersDTO){
         try {
+            mailService.sendEmail();
             Users user = usersService.signUP(addUsersDTO);
             return new ResponseEntity(user, HttpStatus.CREATED);
         }catch (AdminNotAvailableException adminNotAvailableException){

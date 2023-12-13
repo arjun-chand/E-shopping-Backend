@@ -32,6 +32,9 @@ public class OrderService {
 
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    MailService mailService;
     public BillDTO placeOrder(PlaceOrderDTO placeOrderDTO){
         List<Integer> productIds = placeOrderDTO.getProducts();
         String userName = placeOrderDTO.getUserName();
@@ -64,6 +67,8 @@ public class OrderService {
         for (Product p: products){
             orderRepository.insertProductVsOrder(obj.getOId(), p.getPId());
         }
+
+        mailService.sendOrderCreateMail(user, obj);
 
         BillDTO bill = new BillDTO();
         bill.setProducts(products);
