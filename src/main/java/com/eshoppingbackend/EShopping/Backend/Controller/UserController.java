@@ -8,6 +8,7 @@ import com.eshoppingbackend.EShopping.Backend.Entity.Orders;
 import com.eshoppingbackend.EShopping.Backend.Entity.Users;
 import com.eshoppingbackend.EShopping.Backend.Exception.*;
 import com.eshoppingbackend.EShopping.Backend.Service.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "User Service End-points", description = "this controlller contains all the end points that the normal can perform")
 @RestController
 @RequestMapping("/e-shopping/users")
 public class UserController {
