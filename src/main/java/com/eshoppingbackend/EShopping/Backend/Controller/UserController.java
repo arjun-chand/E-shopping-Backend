@@ -31,6 +31,9 @@ public class UserController {
     @Autowired
     MailService mailService;
 
+    @Autowired
+    ComplainService complainService;
+
     @PostMapping("/sign-up")
     public ResponseEntity signUp(@RequestBody AddUsersDTO addUsersDTO){
         try {
@@ -102,6 +105,7 @@ public class UserController {
     @PostMapping("/place-order")
     public ResponseEntity placeOrder(@RequestBody PlaceOrderDTO placeOrderDTO){
         try {
+            complainService.registerComplain("xyz","123");
             BillDTO bill = orderService.placeOrder(placeOrderDTO);
             return new ResponseEntity(bill, HttpStatus.CREATED);
         }catch (UserNotFoundException userNotFoundException){
