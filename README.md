@@ -18,8 +18,9 @@ Introduction
   E-Shopping Backend is designed to handle the server-side logic for an e-commerce application. It includes functionalities such as user authentication, product management, cart management, and order processing. This backend is built using Java Spring Boot ,designed to handle the server-side logic for an e-commerce application. It uses MySQL for data storage and integrates with tools such as Postman for API testing and pgAdmin for database management.
 
 Features
+
   > User authentication (signup, login)
-  > Product management (add, update, delete products)
+  > Product management (add, update, delete products) by Admin
   > Cart management (add to cart, remove from cart, view cart)
   > Order processing (place an order, view order history)
   > Secure password storage
