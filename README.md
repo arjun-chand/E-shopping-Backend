@@ -15,7 +15,7 @@ Table of Contents
   > Contributing
 
 Introduction
-  E-Shopping Backend is designed to handle the server-side logic for an e-commerce application. It includes functionalities such as user authentication, product management, cart management, and order processing. This backend is built using Java Spring Boot ,designed to handle the server-side logic for an e-commerce application. It uses MySQL for data storage and integrates with tools such as Postman for API testing and pgAdmin for database management.
+  E-Shopping Backend is designed to handle the server-side logic for an e-commerce application. It includes functionalities such as user authentication, product management, cart management, and order processing. This backend is built using Java Spring Boot ,designed to handle the server-side logic for an e-commerce application. It uses MySQL for data storage and integrates with tools such as Postman for API testing and pgAdmin for database management and Implimented Swagger as well.
 
 Features
 
@@ -55,15 +55,13 @@ Order Processing
 POST [/api/orders](http://localhost:8083/e-shopping/users/place-order): Place a new order.
 GET [/api/orders](http://localhost:8083/e-shopping/users/100/your-orders): Get the user's order history.
 DELETE http://localhost:8083/e-shopping/users/orders/6/cancel-orders/6 : Cancel the Order
-Configuration
-The application can be configured using the variables in the .env file.
-The JWT_SECRET should be a secure random string for token generation.
-Configure the email service and credentials for HTML email features.
-HTML Email
-The application supports HTML email for order confirmation. Configure the following additional variables in the .env file:
 
-env
-Copy code
-EMAIL_SERVICE=your_email_service
-EMAIL_USER=your_email_user
-EMAIL_PASSWORD=your_email_password
+
+![Screenshot (106)](https://github.com/arjun-chand/E-shopping-Backend/assets/124900252/1e027dc9-a247-4678-afbd-dea7f23860c2)
+
+
+
+![Screenshot (105)](https://github.com/arjun-chand/E-shopping-Backend/assets/124900252/a2b09b66-c6b8-4ae6-9749-bf480bcea7ac)
+
+
+![Screenshot (100)](https://github.com/arjun-chand/E-shopping-Backend/assets/124900252/0700b200-90f7-4521-a2f8-d87cc4582bd9)
